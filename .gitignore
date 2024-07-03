@@ -199,3 +199,6 @@ README.html
 *.iml
 .idea
 .exercism
+
+## application.yml
+application.yml
