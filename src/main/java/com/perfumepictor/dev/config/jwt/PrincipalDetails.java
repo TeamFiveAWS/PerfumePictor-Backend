@@ -1,6 +1,5 @@
 package com.perfumepictor.dev.config.jwt;
 
-import com.perfumepictor.dev.entity.Profiles;
 import java.util.Collection;
 import java.util.Collections;
 import lombok.AllArgsConstructor;
@@ -13,12 +12,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
-    private String email;
+    private String userId;
     private String password;
     private String role;
 
-    public PrincipalDetails(Profiles profile) {
-        this.email = profile.getEmail();
+    public PrincipalDetails(String userId) {
+        this.userId = userId;
         this.role = "USER";
     }
 
@@ -29,7 +28,7 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.email;
+        return this.userId;
     }
 
     @Override

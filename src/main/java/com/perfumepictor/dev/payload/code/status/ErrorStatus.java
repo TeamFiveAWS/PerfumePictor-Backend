@@ -23,7 +23,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _DATA_NOT_FOUND(NOT_FOUND, "COMMON404", "해당 데이터를 찾을 수 없습니다."),
     _INTERNAL_SERVER_ERROR(INTERNAL_SERVER_ERROR, "COMMON500", "서버 에러, 관리자에게 문의 바랍니다."),
 
-    TOKEN_TIME_OUT(UNAUTHORIZED, "AUTH4011", "토큰이 만료되었습니다."),
+    EXPIRED_TOKEN(UNAUTHORIZED, "AUTH4011", "토큰이 만료되었습니다."),
     INVALID_JWT_TOKEN(UNAUTHORIZED, "AUTH4012", "토큰 유효성 검사 실패 또는 거부된 토큰입니다."),
     ACCESS_DENIED(FORBIDDEN, "AUTH4031", "접근 권한이 없습니다."),
 
