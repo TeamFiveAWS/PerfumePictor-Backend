@@ -17,6 +17,6 @@ public class HelloController {
 
     @GetMapping("/hello")
     public BaseResponse<String> ping(){
-        return BaseResponse.onSuccess("health check!");
+        return BaseResponse.onSuccess("health check!!!");
     }
 }
