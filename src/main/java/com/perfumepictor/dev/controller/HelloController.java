@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping
+@RequestMapping("api/v1")
 @RequiredArgsConstructor
 public class HelloController {
 
-    @GetMapping("/")
+    @GetMapping("/hello")
     public BaseResponse<String> ping(){
         return BaseResponse.onSuccess("health check!");
     }
