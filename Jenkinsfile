@@ -24,6 +24,8 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'application.yml', variable: 'APPLICATION_YML')]) {
                     script {
+                        ls '-la'
+                        pwd()
                         sh 'cp $APPLICATION_YML src/main/resources/application.yml'
                     }
                 }
