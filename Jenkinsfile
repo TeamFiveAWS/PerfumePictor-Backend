@@ -20,6 +20,16 @@ pipeline {
 
     stages {
 
+        stage('application.yml download') {
+            steps {
+                withCredentials([file(credentialsId: 'application.yml', variable: 'APPLICATION_YML')]) {
+                    script {
+                        sh 'cp $APPLICATION_YML src/main/resources/application.yml'
+                    }
+                }
+            }
+        }
+
         // Building Docker image
         stage('Building image') {
             steps {
