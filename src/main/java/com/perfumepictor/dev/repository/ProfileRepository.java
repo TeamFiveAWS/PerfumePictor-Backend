@@ -2,7 +2,6 @@ package com.perfumepictor.dev.repository;
 
 import com.perfumepictor.dev.entity.Profiles;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;

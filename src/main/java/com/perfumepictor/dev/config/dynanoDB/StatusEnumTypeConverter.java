@@ -6,6 +6,8 @@ import software.amazon.awssdk.enhanced.dynamodb.AttributeValueType;
 import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
+
+// TODO: To Be Deleted
 public class StatusEnumTypeConverter implements AttributeConverter<Status> {
 
     @Override

@@ -45,6 +45,7 @@ public class DynamoDBConfig {
         return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build();
     }
 
+    // TODO: To Be Deleted
     @Bean
     public AttributeConverter<Status> statusEnumConverter() {
         return new StatusEnumTypeConverter();
