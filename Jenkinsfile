@@ -1,24 +1,27 @@
 pipeline {
     agent any
     environment {
-        AWS_ACCOUNT_ID="381492118407"
         AWS_DEFAULT_REGION="ap-northeast-2"
-	    CLUSTER_NAME="perfumepictor-cluster"
-	    SERVICE_NAME="perfumpictor-service"
-	    TASK_DEFINITION_NAME="<REPLACE WITH TASK DEFINITION NAME>"
-	    DESIRED_COUNT="1"
-        IMAGE_REPO_NAME="perfumepictor"
-        //Do not edit the variable IMAGE_TAG. It uses the Jenkins job build ID as a tag for the new image.
         IMAGE_TAG="latest"
-        //Do not edit REPOSITORY_URI.
-        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
 	    registryCredential = "Jenkins-user"
-	    JOB_NAME = "<REPLACE WITH JOB NAME>"
-	    TEST_CONTAINER_NAME = "${JOB_NAME}-test-server"
-
     }
 
     stages {
+
+        stage('Setup Environment') {
+            steps {
+                script {
+                    withCredentials([
+                            string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
+                            string(credentialsId: 'ecs-cluster-name', variable: 'CLUSTER_NAME'),
+                            string(credentialsId: 'ecs-service-name', variable: 'SERVICE_NAME'),
+                            string(credentialsId: 'ecr-repo-name', variable: 'IMAGE_REPO_NAME')
+                    ]) {
+                        env.REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+                    }
+                }
+            }
+        }
 
         stage('application.yml download') {
             steps {
@@ -40,12 +43,6 @@ pipeline {
                 }
             }
         }
-    // Run container locally and perform tests
-//     stage('Running tests') {
-//       steps{
-//         sh 'docker run -i --rm --name "${TEST_CONTAINER_NAME}" "${IMAGE_REPO_NAME}:${IMAGE_TAG}" npm test -- --watchAll=false'
-//       }
-//     }
 
         // Uploading Docker image into AWS ECR
         stage('Releasing') {
@@ -69,18 +66,6 @@ pipeline {
         }
     }
 
-    // Update task definition and service running in ECS cluster to deploy
-//     stage('Deploy') {
-//      steps{
-//             withAWS(credentials: registryCredential, region: "${AWS_DEFAULT_REGION}") {
-//                 script {
-// 			sh "chmod +x -R ${env.WORKSPACE}"
-// 			sh './script.sh'
-//                 }
-//             }
-//          }
-//        }
-//      }
    // Clear local image registry. Note that all the data that was used to build the image is being cleared.
    // For different use cases, one may not want to clear all this data so it doesn't have to be pulled again for each build.
     post {
