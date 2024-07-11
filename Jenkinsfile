@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
+        registryCredential = "Jenkins-user"
         AWS_DEFAULT_REGION="ap-northeast-2"
         IMAGE_TAG="latest"
-	    registryCredential = "Jenkins-user"
         AWS_ACCOUNT_ID = credentials('aws-account-id')
         CLUSTER_NAME = credentials('ecs-cluster-name')
         SERVICE_NAME = credentials('ecs-service-name')
