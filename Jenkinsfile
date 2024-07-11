@@ -11,14 +11,11 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 script {
-                    withCredentials([
-                            string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
-                            string(credentialsId: 'ecs-cluster-name', variable: 'CLUSTER_NAME'),
-                            string(credentialsId: 'ecs-service-name', variable: 'SERVICE_NAME'),
-                            string(credentialsId: 'ecr-repo-name', variable: 'IMAGE_REPO_NAME')
-                    ]) {
-                        env.REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
-                    }
+                    env.AWS_ACCOUNT_ID = credentials('aws-account-id')
+                    env.CLUSTER_NAME = credentials('ecs-cluster-name')
+                    env.SERVICE_NAME = credentials('ecs-service-name')
+                    env.IMAGE_REPO_NAME = credentials('ecr-repo-name')
+                    env.REPOSITORY_URI = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_DEFAULT_REGION}.amazonaws.com/${env.IMAGE_REPO_NAME}"
                 }
             }
         }
@@ -39,7 +36,7 @@ pipeline {
         stage('Building image') {
             steps {
                 script {
-                    dockerImage = docker.build "${IMAGE_REPO_NAME}:${IMAGE_TAG}"
+                    dockerImage = docker.build "${env.IMAGE_REPO_NAME}:${IMAGE_TAG}"
                 }
             }
         }
@@ -48,7 +45,7 @@ pipeline {
         stage('Releasing') {
             steps {
                 script {
-                    docker.withRegistry("https://" + REPOSITORY_URI, "ecr:${AWS_DEFAULT_REGION}:" + registryCredential) {
+                    docker.withRegistry("https://" + env.REPOSITORY_URI, "ecr:${AWS_DEFAULT_REGION}:" + registryCredential) {
                                 dockerImage.push()
                     }
                 }
@@ -59,7 +56,7 @@ pipeline {
             steps {
                 withAWS(credentials: registryCredential, region: "${AWS_DEFAULT_REGION}") {
                     script {
-                       sh "aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --force-new-deployment"
+                       sh "aws ecs update-service --cluster ${env.CLUSTER_NAME} --service ${env.SERVICE_NAME} --force-new-deployment"
                     }
                 }
             }
