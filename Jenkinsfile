@@ -27,7 +27,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'application.yml', variable: 'APPLICATION_YML')]) {
                     script {
-                        sh 'mkdir src/main/resources'
+                        sh 'mkdir -p src/main/resources'
                         sh 'touch src/main/resources/application.yml'
                         sh 'cp $APPLICATION_YML src/main/resources/application.yml'
                     }
