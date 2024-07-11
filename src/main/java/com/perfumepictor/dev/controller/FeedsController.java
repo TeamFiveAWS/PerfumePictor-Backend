@@ -1,7 +1,8 @@
 package com.perfumepictor.dev.controller;
 
-import com.perfumepictor.dev.dto.FeedRequest;
-import com.perfumepictor.dev.entity.Feeds;
+import com.perfumepictor.dev.dto.CreateFeedRequestDTO;
+import com.perfumepictor.dev.dto.CreateFeedResponseDTO;
+import com.perfumepictor.dev.entity.Feed;
 import com.perfumepictor.dev.payload.BaseResponse;
 import com.perfumepictor.dev.service.FeedsService;
 import jakarta.validation.Valid;
@@ -23,9 +24,9 @@ public class FeedsController {
     private final FeedsService feedsService;
 
     @PostMapping("/feeds")
-    public BaseResponse<Feeds> createFeed(@Valid @RequestBody final FeedRequest feedRequest) {
-        Feeds feeds = feedsService.createFeed(feedRequest);
-        return BaseResponse.onSuccess(feeds);
+    public BaseResponse<CreateFeedResponseDTO> createFeed(@RequestBody @Valid final CreateFeedRequestDTO requestDTO) {
+        Feed feed = feedsService.createFeed(requestDTO);
+        return BaseResponse.onSuccess(CreateFeedResponseDTO.from(feed));
     }
 
 }

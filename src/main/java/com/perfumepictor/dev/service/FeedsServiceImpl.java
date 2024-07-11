@@ -1,14 +1,12 @@
 package com.perfumepictor.dev.service;
 
-import com.perfumepictor.dev.dto.FeedRequest;
-import com.perfumepictor.dev.entity.Feeds;
+import com.perfumepictor.dev.dto.CreateFeedRequestDTO;
+import com.perfumepictor.dev.entity.Feed;
 import com.perfumepictor.dev.repository.FeedRepository;
-import com.perfumepictor.dev.utils.Status;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -18,15 +16,14 @@ public class FeedsServiceImpl implements FeedsService {
     private final FeedRepository feedRepository;
 
     @Override
-    public Feeds createFeed(FeedRequest feedRequest) {
+    public Feed createFeed(CreateFeedRequestDTO requestDTO) {
 
-        Feeds feed = Feeds.builder()
-                .email(feedRequest.email())
-                .nickname(feedRequest.nickname())
-                .imageUrl(feedRequest.imageUrl())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.ACTIVE)
+        Feed feed = Feed.builder()
+                .userId(requestDTO.userId())
+                .profileImg(requestDTO.profileImg())
+                .content(requestDTO.content())
+                .contentImg(requestDTO.contentImg())
+                .perfumeInfo(requestDTO.perfumeInfo())
                 .build();
 
         feedRepository.createFeed(feed);

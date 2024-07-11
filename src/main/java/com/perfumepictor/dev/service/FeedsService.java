@@ -1,10 +1,10 @@
 package com.perfumepictor.dev.service;
 
 
-import com.perfumepictor.dev.dto.FeedRequest;
-import com.perfumepictor.dev.entity.Feeds;
+import com.perfumepictor.dev.dto.CreateFeedRequestDTO;
+import com.perfumepictor.dev.entity.Feed;
 
 public interface FeedsService {
 
-    Feeds createFeed(FeedRequest feedRequest);
+    Feed createFeed(CreateFeedRequestDTO requestDTO);
 }
