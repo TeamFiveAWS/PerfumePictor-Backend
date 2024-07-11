@@ -1,7 +1,6 @@
 package com.perfumepictor.dev.controller;
 
-import com.perfumepictor.dev.converter.AuthConverter;
-import com.perfumepictor.dev.dto.AuthResponseDTO;
+import com.perfumepictor.dev.dto.GetUserIdResponseDTO;
 import com.perfumepictor.dev.payload.BaseResponse;
 import com.perfumepictor.dev.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +20,9 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/users")
-    public BaseResponse<AuthResponseDTO.GetUserIdDTO> getUser() {
+    public BaseResponse<GetUserIdResponseDTO> getUser() {
         String userId = authService.getCurrentUserId();
-        return BaseResponse.onSuccess(AuthConverter.toGetUserIdDTO(userId));
+        return BaseResponse.onSuccess(GetUserIdResponseDTO.from(userId));
     }
 
 }
