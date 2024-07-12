@@ -1,6 +1,6 @@
 package com.perfumepictor.dev.config.dynanoDB;
 
-import com.perfumepictor.dev.utils.Status;
+import com.perfumepictor.dev.enums.Status;
 import software.amazon.awssdk.enhanced.dynamodb.AttributeConverter;
 import software.amazon.awssdk.enhanced.dynamodb.AttributeValueType;
 import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;

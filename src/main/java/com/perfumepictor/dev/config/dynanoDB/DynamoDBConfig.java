@@ -3,7 +3,7 @@ package com.perfumepictor.dev.config.dynanoDB;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.perfumepictor.dev.utils.Status;
+import com.perfumepictor.dev.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

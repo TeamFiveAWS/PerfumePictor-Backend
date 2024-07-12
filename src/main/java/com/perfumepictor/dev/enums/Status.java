@@ -1,4 +1,4 @@
-package com.perfumepictor.dev.utils;
+package com.perfumepictor.dev.enums;
 
 public enum Status {
     ACTIVE,
