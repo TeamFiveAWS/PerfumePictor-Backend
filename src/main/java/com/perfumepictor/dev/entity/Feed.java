@@ -103,7 +103,7 @@ public class Feed {
         @Override
         public Feed build() {
             if (super.PK == null) {
-                super.PK = FeedConfig.DEFAULT_PK;
+                super.PK = super.userId;
             }
             if (super.createdAt == null) {
                 super.createdAt = LocalDateTime.now();
