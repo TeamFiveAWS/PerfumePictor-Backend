@@ -1,17 +1,21 @@
 package com.perfumepictor.dev.controller;
 
 import com.perfumepictor.dev.dto.CreateFeedRequestDTO;
-import com.perfumepictor.dev.dto.CreateFeedResponseDTO;
+import com.perfumepictor.dev.dto.GetFeedResponseDTO;
+import com.perfumepictor.dev.dto.GetFeedsResponseDTO;
 import com.perfumepictor.dev.entity.Feed;
 import com.perfumepictor.dev.payload.BaseResponse;
 import com.perfumepictor.dev.service.FeedsService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -24,9 +28,16 @@ public class FeedsController {
     private final FeedsService feedsService;
 
     @PostMapping("/feeds")
-    public BaseResponse<CreateFeedResponseDTO> createFeed(@RequestBody @Valid final CreateFeedRequestDTO requestDTO) {
+    public BaseResponse<GetFeedResponseDTO> createFeed(@RequestBody @Valid final CreateFeedRequestDTO requestDTO) {
         Feed feed = feedsService.createFeed(requestDTO);
-        return BaseResponse.onSuccess(CreateFeedResponseDTO.from(feed));
+        return BaseResponse.onSuccess(GetFeedResponseDTO.from(feed));
+    }
+
+    @GetMapping("/feeds")
+    public BaseResponse<GetFeedsResponseDTO> getFeeds(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                      @RequestParam(value = "size", defaultValue = "10") int size) {
+        List<Feed> feeds = feedsService.getFeeds(page, size);
+        return BaseResponse.onSuccess(GetFeedsResponseDTO.from(feeds));
     }
 
 }

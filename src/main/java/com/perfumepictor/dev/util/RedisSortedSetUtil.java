@@ -1,7 +1,6 @@
 package com.perfumepictor.dev.util;
 
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -26,6 +25,14 @@ public class RedisSortedSetUtil {
 
     public Set<String> getElements(String key) {
         return zSetOps.range(key, 0, -1);
+    }
+
+    public Set<String> getElements(String key, long start, long end) {
+        return zSetOps.range(key, start, end);
+    }
+
+    public Set<String> getElementsReverse(String key, long start, long end) {
+        return zSetOps.reverseRange(key, start, end);
     }
 
     public Set<String> getElementsByScore(String key, double minScore, double maxScore) {

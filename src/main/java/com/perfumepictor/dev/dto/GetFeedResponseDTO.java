@@ -2,7 +2,7 @@ package com.perfumepictor.dev.dto;
 
 import com.perfumepictor.dev.entity.Feed;
 
-public record CreateFeedResponseDTO(
+public record GetFeedResponseDTO(
         String userId,
         String profileImg,
         String content,
@@ -10,8 +10,8 @@ public record CreateFeedResponseDTO(
         String perfumeInfo,
         String createdAt) {
 
-    public static CreateFeedResponseDTO from(Feed feed) {
-        return new CreateFeedResponseDTO(
+    public static GetFeedResponseDTO from(Feed feed) {
+        return new GetFeedResponseDTO(
                 feed.getUserId(),
                 feed.getProfileImg(),
                 feed.getContent(),
