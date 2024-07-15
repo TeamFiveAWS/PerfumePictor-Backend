@@ -3,7 +3,9 @@ package com.perfumepictor.dev.repository;
 import com.perfumepictor.dev.entity.Feed;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +17,12 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.BatchGetItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.BatchGetResultPage;
 import software.amazon.awssdk.enhanced.dynamodb.model.BatchGetResultPageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.ReadBatch;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 
 @Slf4j
@@ -66,6 +73,49 @@ public class FeedRepository {
         }
 
         return resultFeeds;
+    }
+
+    public Map<String, Object> getFeedsByUserId(String userId, String lastEvaluatedKey, int pageSize) {
+
+        QueryConditional queryConditional = QueryConditional
+                .keyEqualTo(Key.builder().partitionValue(userId).build());
+
+        QueryEnhancedRequest.Builder queryEnhancedRequestBuilder = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .limit(pageSize)
+                .scanIndexForward(false);
+
+        if (lastEvaluatedKey != null && !lastEvaluatedKey.isEmpty()) {
+            String[] keyParts = lastEvaluatedKey.split("\\$");
+            Map<String, AttributeValue> exclusiveStartKey = new HashMap<>();
+            exclusiveStartKey.put("PK", AttributeValue.builder().s(keyParts[0]).build());
+            exclusiveStartKey.put("SK", AttributeValue.builder().s(keyParts[1]).build());
+            queryEnhancedRequestBuilder.exclusiveStartKey(exclusiveStartKey);
+        }
+
+        QueryEnhancedRequest queryEnhancedRequest = queryEnhancedRequestBuilder.build();
+
+        PageIterable<Feed> pagedResult = feedsDynamoDbTable.query(queryEnhancedRequest);
+
+        List<Feed> feedList = new ArrayList<>();
+        Map<String, AttributeValue> nextKey = null;
+
+        Page<Feed> firstPage = pagedResult.stream().findFirst().orElse(null);
+        if (firstPage != null) {
+            feedList.addAll(firstPage.items());
+            nextKey = firstPage.lastEvaluatedKey();
+        }
+
+        String lastFeedKey = null;
+        if (nextKey != null) {
+            lastFeedKey = nextKey.get("PK").s() + "$" + nextKey.get("SK").s();
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("feeds", feedList);
+        result.put("lastFeedKey", lastFeedKey);
+
+        return result;
     }
 
     public void deleteFeed(String feedKey) {

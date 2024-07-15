@@ -9,6 +9,7 @@ import com.perfumepictor.dev.util.RedisSortedSetUtil;
 import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,13 +52,19 @@ public class FeedServiceImpl implements FeedService {
     @Override
     @Transactional(readOnly = true)
     public List<Feed> getFeeds(int page, int size) {
-
         Set<String> keys = redisSortedSetUtil.getElementsReverse("feeds", page * size, (page + 1) * size - 1);
         List<Feed> feeds = feedRepository.getFeeds(keys);
         feeds.sort(Comparator.comparing(Feed::getCreatedAt).reversed());
 
         // TODO: 캐시 미스 났을 때 -> 걍 인기순으로 할까?
         return feeds;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> getMyFeeds(String lastFeedKey, int size) {
+        String userId = authService.getCurrentUserId();
+        return feedRepository.getFeedsByUserId(userId, lastFeedKey, size);
     }
 
     @Override

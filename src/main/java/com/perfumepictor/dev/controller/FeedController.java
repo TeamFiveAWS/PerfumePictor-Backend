@@ -10,6 +10,7 @@ import com.perfumepictor.dev.payload.BaseResponse;
 import com.perfumepictor.dev.service.FeedService;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -42,6 +43,13 @@ public class FeedController {
                                                       @RequestParam(value = "size", defaultValue = "10") int size) {
         List<Feed> feeds = feedsService.getFeeds(page, size);
         return BaseResponse.onSuccess(GetFeedsResponseDTO.from(feeds));
+    }
+
+    @GetMapping("/feeds/my")
+    public BaseResponse<GetFeedsResponseDTO> getMyFeeds(@RequestHeader(value = "lastFeedKey", required = false) String lastFeedKey,
+                                                      @RequestParam(value = "size", defaultValue = "10") int size) {
+        Map<String, Object> feedPage = feedsService.getMyFeeds(lastFeedKey, size);
+        return BaseResponse.onSuccess(GetFeedsResponseDTO.from((List<Feed>) feedPage.get("feeds"), (String) feedPage.get("lastFeedKey")));
     }
 
     @DeleteMapping("/feeds")
