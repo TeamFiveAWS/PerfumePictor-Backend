@@ -62,4 +62,12 @@ public class FeedsServiceImpl implements FeedsService {
         // TODO: 캐시 미스 났을 때
         return feeds;
     }
+
+    @Override
+    @Transactional
+    public Long deleteFeed(String feedKey) {
+        System.out.println(feedKey);
+        feedRepository.deleteFeed(feedKey);
+        return redisSortedSetUtil.removeElement("feeds", feedKey);
+    }
 }

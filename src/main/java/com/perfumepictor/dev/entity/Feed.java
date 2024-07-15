@@ -94,6 +94,18 @@ public class Feed {
         return updatedAt;
     }
 
+    public String getKey() {
+        return this.PK + "$" + this.SK;
+    }
+
+    public static String getPKFromKey(String key) {
+        return key.split("\\$")[0];
+    }
+
+    public static String getSKFromKey(String key) {
+        return key.split("\\$")[1];
+    }
+
     public static FeedBuilder builder() {
         return new CustomFeedBuilder();
     }
@@ -126,5 +138,4 @@ public class Feed {
             return sb.toString();
         }
     }
-
 }

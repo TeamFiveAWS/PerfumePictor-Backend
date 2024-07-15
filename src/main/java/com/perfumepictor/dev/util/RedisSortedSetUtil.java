@@ -39,8 +39,8 @@ public class RedisSortedSetUtil {
         return zSetOps.rangeByScore(key, minScore, maxScore);
     }
 
-    public void removeElement(String key, String value) {
-        zSetOps.remove(key, value);
+    public Long removeElement(String key, String value) {
+        return zSetOps.remove(key, value);
     }
 
     // TODO: ttl은 배치돌면서 지우기..

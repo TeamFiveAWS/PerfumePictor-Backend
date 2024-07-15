@@ -9,4 +9,5 @@ public interface FeedsService {
 
     Feed createFeed(CreateFeedRequestDTO requestDTO);
     List<Feed> getFeeds(int page, int size);
+    Long deleteFeed(String feedKey);
 }

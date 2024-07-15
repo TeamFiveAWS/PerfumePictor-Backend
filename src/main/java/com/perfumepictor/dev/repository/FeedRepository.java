@@ -50,8 +50,8 @@ public class FeedRepository {
                         .map(entry -> ReadBatch.builder(Feed.class)
                                 .mappedTableResource(feedsDynamoDbTable)
                                 .addGetItem(Key.builder()
-                                        .partitionValue(entry.split("\\$")[0])
-                                        .sortValue(entry.split("\\$")[1])
+                                        .partitionValue(Feed.getPKFromKey(entry))
+                                        .sortValue(Feed.getSKFromKey(entry))
                                         .build())
                                 .build())
                         .toList())
@@ -66,6 +66,13 @@ public class FeedRepository {
         }
 
         return resultFeeds;
+    }
+
+    public void deleteFeed(String feedKey) {
+        feedsDynamoDbTable.deleteItem(Key.builder()
+                .partitionValue(Feed.getPKFromKey(feedKey))
+                .sortValue(Feed.getSKFromKey(feedKey))
+                .build());
     }
 
 }
