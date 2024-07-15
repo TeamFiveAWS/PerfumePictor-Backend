@@ -11,7 +11,7 @@ public interface FeedService {
 
     Feed createFeed(CreateFeedRequestDTO requestDTO);
     List<Feed> getFeeds(int page, int size);
-    Map<String, Object> getMyFeeds(String lastFeedKey, int size);
+    Map<String, Object> getMyFeeds(String userId, String lastFeedKey, int size);
     Long deleteFeed(String feedKey);
     Like likeFeed(String feedKey);
 }

@@ -62,15 +62,13 @@ public class FeedServiceImpl implements FeedService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getMyFeeds(String lastFeedKey, int size) {
-        String userId = authService.getCurrentUserId();
+    public Map<String, Object> getMyFeeds(String userId, String lastFeedKey, int size) {
         return feedRepository.getFeedsByUserId(userId, lastFeedKey, size);
     }
 
     @Override
     @Transactional
     public Long deleteFeed(String feedKey) {
-        System.out.println(feedKey);
         feedRepository.deleteFeed(feedKey);
         return redisSortedSetUtil.removeElement("feeds", feedKey);
     }
