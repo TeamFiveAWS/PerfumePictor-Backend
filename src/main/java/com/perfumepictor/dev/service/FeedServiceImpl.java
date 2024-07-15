@@ -5,25 +5,18 @@ import com.perfumepictor.dev.entity.Feed;
 import com.perfumepictor.dev.repository.FeedRepository;
 import com.perfumepictor.dev.util.RedisSortedSetUtil;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.BatchGetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.KeysAndAttributes;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FeedsServiceImpl implements FeedsService {
+public class FeedServiceImpl implements FeedService {
 
     private final int ZONE_OFFSET_HOUR = 9;
     private final FeedRepository feedRepository;
@@ -59,7 +52,7 @@ public class FeedsServiceImpl implements FeedsService {
         List<Feed> feeds = feedRepository.getFeeds(keys);
         feeds.sort(Comparator.comparing(Feed::getCreatedAt).reversed());
 
-        // TODO: 캐시 미스 났을 때
+        // TODO: 캐시 미스 났을 때 -> 걍 인기순으로 할까?
         return feeds;
     }
 
@@ -70,4 +63,6 @@ public class FeedsServiceImpl implements FeedsService {
         feedRepository.deleteFeed(feedKey);
         return redisSortedSetUtil.removeElement("feeds", feedKey);
     }
+
+
 }

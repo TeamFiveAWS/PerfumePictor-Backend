@@ -5,7 +5,7 @@ import com.perfumepictor.dev.dto.GetFeedResponseDTO;
 import com.perfumepictor.dev.dto.GetFeedsResponseDTO;
 import com.perfumepictor.dev.entity.Feed;
 import com.perfumepictor.dev.payload.BaseResponse;
-import com.perfumepictor.dev.service.FeedsService;
+import com.perfumepictor.dev.service.FeedService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1")
 @RequiredArgsConstructor
-public class FeedsController {
+public class FeedController {
 
-    private final FeedsService feedsService;
+    private final FeedService feedsService;
 
     @PostMapping("/feeds")
     public BaseResponse<GetFeedResponseDTO> createFeed(@RequestBody @Valid final CreateFeedRequestDTO requestDTO) {
