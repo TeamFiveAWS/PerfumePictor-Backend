@@ -28,13 +28,15 @@ public class FeedsServiceImpl implements FeedsService {
     private final int ZONE_OFFSET_HOUR = 9;
     private final FeedRepository feedRepository;
     private final RedisSortedSetUtil redisSortedSetUtil;
+    private final AuthService authService;
 
     @Override
     @Transactional
     public Feed createFeed(CreateFeedRequestDTO requestDTO) {
+        String userId = authService.getCurrentUserId();
 
         Feed feed = Feed.builder()
-                .userId(requestDTO.userId())
+                .userId(userId)
                 .profileImg(requestDTO.profileImg())
                 .content(requestDTO.content())
                 .contentImg(requestDTO.contentImg())
@@ -56,6 +58,8 @@ public class FeedsServiceImpl implements FeedsService {
         Set<String> keys = redisSortedSetUtil.getElementsReverse("feeds", page * size, (page + 1) * size - 1);
         List<Feed> feeds = feedRepository.getFeeds(keys);
         feeds.sort(Comparator.comparing(Feed::getCreatedAt).reversed());
+
+        // TODO: 캐시 미스 났을 때
         return feeds;
     }
 }

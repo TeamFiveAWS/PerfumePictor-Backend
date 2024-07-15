@@ -4,9 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record CreateFeedRequestDTO(
         @NotBlank
-        String userId,
-
-        @NotBlank
         String profileImg,
 
         @NotBlank
