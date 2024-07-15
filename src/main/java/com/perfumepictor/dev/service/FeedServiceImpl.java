@@ -2,7 +2,9 @@ package com.perfumepictor.dev.service;
 
 import com.perfumepictor.dev.dto.CreateFeedRequestDTO;
 import com.perfumepictor.dev.entity.Feed;
+import com.perfumepictor.dev.entity.Like;
 import com.perfumepictor.dev.repository.FeedRepository;
+import com.perfumepictor.dev.repository.LikeRepository;
 import com.perfumepictor.dev.util.RedisSortedSetUtil;
 import java.time.ZoneOffset;
 import java.util.Comparator;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 @Slf4j
 @Service
@@ -20,6 +23,7 @@ public class FeedServiceImpl implements FeedService {
 
     private final int ZONE_OFFSET_HOUR = 9;
     private final FeedRepository feedRepository;
+    private final LikeRepository likeRepository;
     private final RedisSortedSetUtil redisSortedSetUtil;
     private final AuthService authService;
 
@@ -64,5 +68,20 @@ public class FeedServiceImpl implements FeedService {
         return redisSortedSetUtil.removeElement("feeds", feedKey);
     }
 
+    @Override
+    @Transactional
+    public Like likeFeed(String feedKey) {
+        String userId = authService.getCurrentUserId();
 
+        Like like = likeRepository.getLike(Key.builder().partitionValue(userId).sortValue(feedKey).build())
+                .orElse(Like.builder()
+                        .userId(userId)
+                        .feedKey(feedKey)
+                        .like(false)
+                        .build());
+
+        like.toggleLike();
+        likeRepository.updateLike(like);
+        return like;
+    }
 }

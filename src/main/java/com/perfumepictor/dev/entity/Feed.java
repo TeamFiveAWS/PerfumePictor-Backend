@@ -1,6 +1,5 @@
 package com.perfumepictor.dev.entity;
 
-import com.perfumepictor.dev.config.FeedConfig;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -138,4 +137,6 @@ public class Feed {
             return sb.toString();
         }
     }
+
+    // TODO: updatedAt 자동 변경..
 }

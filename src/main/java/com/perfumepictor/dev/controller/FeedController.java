@@ -3,7 +3,9 @@ package com.perfumepictor.dev.controller;
 import com.perfumepictor.dev.dto.CreateFeedRequestDTO;
 import com.perfumepictor.dev.dto.GetFeedResponseDTO;
 import com.perfumepictor.dev.dto.GetFeedsResponseDTO;
+import com.perfumepictor.dev.dto.LikeFeedResponseDTO;
 import com.perfumepictor.dev.entity.Feed;
+import com.perfumepictor.dev.entity.Like;
 import com.perfumepictor.dev.payload.BaseResponse;
 import com.perfumepictor.dev.service.FeedService;
 import jakarta.validation.Valid;
@@ -45,6 +47,12 @@ public class FeedController {
     @DeleteMapping("/feeds")
     public BaseResponse<Long> deleteFeed(@RequestHeader String feedKey) {
         return BaseResponse.onSuccess(feedsService.deleteFeed(feedKey));
+    }
+
+    @PostMapping("/feeds/like")
+    public BaseResponse<LikeFeedResponseDTO> likeFeed(@RequestHeader String feedKey) {
+        Like like = feedsService.likeFeed(feedKey);
+        return BaseResponse.onSuccess(LikeFeedResponseDTO.from(like));
     }
 
 }
