@@ -1,6 +1,8 @@
 package com.perfumepictor.dev.repository;
 
 import com.perfumepictor.dev.entity.Feed;
+import com.perfumepictor.dev.payload.code.status.ErrorStatus;
+import com.perfumepictor.dev.payload.exception.GeneralException;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,6 +97,7 @@ public class FeedRepository {
 
         if (lastEvaluatedKey != null && !lastEvaluatedKey.isEmpty()) {
             String[] keyParts = lastEvaluatedKey.split("\\$");
+            if (keyParts.length != 2) throw new GeneralException(ErrorStatus._BAD_REQUEST);
             Map<String, AttributeValue> exclusiveStartKey = new HashMap<>();
             exclusiveStartKey.put("PK", AttributeValue.builder().s(keyParts[0]).build());
             exclusiveStartKey.put("SK", AttributeValue.builder().s(keyParts[1]).build());
