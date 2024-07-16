@@ -11,6 +11,7 @@ import com.perfumepictor.dev.repository.LikeRepository;
 import com.perfumepictor.dev.util.RedisSortedSetUtil;
 import java.time.ZoneOffset;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,10 +93,10 @@ public class FeedServiceImpl implements FeedService {
                 .map(feed -> GetFeedResponseDTO.from(feed, likeMap.getOrDefault(feed.getKey(), false)))
                 .toList();
 
-        return Map.of(
-                "feedDTOs", feedResponseDTOs,
-                "lastFeedKey", feedPage.get("lastFeedKey")
-        );
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("feedDTOs", feedResponseDTOs);
+        resultMap.put("lastFeedKey", feedPage.get("lastFeedKey"));
+        return resultMap;
     }
 
     @Override
