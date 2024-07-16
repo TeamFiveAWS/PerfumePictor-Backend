@@ -9,9 +9,11 @@ public record GetFeedResponseDTO(
         String content,
         String contentImg,
         String perfumeInfo,
-        String createdAt) {
+        String createdAt,
+        Integer likeCount,
+        boolean liked) {
 
-    public static GetFeedResponseDTO from(Feed feed) {
+    public static GetFeedResponseDTO from(Feed feed, boolean liked) {
         return new GetFeedResponseDTO(
                 feed.getKey(),
                 feed.getUserId(),
@@ -19,7 +21,9 @@ public record GetFeedResponseDTO(
                 feed.getContent(),
                 feed.getContentImg(),
                 feed.getPerfumeInfo(),
-                feed.getCreatedAt().toString()
+                feed.getCreatedAt().toString(),
+                feed.getLikeCount(),
+                liked
         );
     }
 }

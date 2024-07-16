@@ -8,17 +8,11 @@ public record GetFeedsResponseDTO(
         String lastFeedKey
 ) {
 
-    public static GetFeedsResponseDTO from(List<Feed> feeds) {
-        List<GetFeedResponseDTO> feedResponseDTOs = feeds.stream()
-                .map(GetFeedResponseDTO::from)
-                .toList();
-        return new GetFeedsResponseDTO(feedResponseDTOs, null);
+    public static GetFeedsResponseDTO from(List<GetFeedResponseDTO> feedDTOs) {
+        return new GetFeedsResponseDTO(feedDTOs, null);
     }
 
-    public static GetFeedsResponseDTO from(List<Feed> feeds, String lastFeedKey) {
-        List<GetFeedResponseDTO> feedResponseDTOs = feeds.stream()
-                .map(GetFeedResponseDTO::from)
-                .toList();
-        return new GetFeedsResponseDTO(feedResponseDTOs, lastFeedKey);
+    public static GetFeedsResponseDTO from(List<GetFeedResponseDTO> feedDTOs, String lastFeedKey) {
+        return new GetFeedsResponseDTO(feedDTOs, lastFeedKey);
     }
 }

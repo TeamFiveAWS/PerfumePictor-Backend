@@ -36,13 +36,13 @@ public class FeedController {
     @PostMapping("/feeds")
     public BaseResponse<GetFeedResponseDTO> createFeed(@RequestBody @Valid final CreateFeedRequestDTO requestDTO) {
         Feed feed = feedsService.createFeed(requestDTO);
-        return BaseResponse.onSuccess(GetFeedResponseDTO.from(feed));
+        return BaseResponse.onSuccess(GetFeedResponseDTO.from(feed, false));
     }
 
     @GetMapping("/feeds")
     public BaseResponse<GetFeedsResponseDTO> getFeeds(@RequestParam(value = "page", defaultValue = "0") int page,
                                                       @RequestParam(value = "size", defaultValue = "10") int size) {
-        List<Feed> feeds = feedsService.getFeeds(page, size);
+        List<GetFeedResponseDTO> feeds = feedsService.getFeeds(page, size);
         return BaseResponse.onSuccess(GetFeedsResponseDTO.from(feeds));
     }
 
@@ -50,8 +50,8 @@ public class FeedController {
     public BaseResponse<GetFeedsResponseDTO> getMyFeeds(@PathVariable(value = "userId") String userId,
                                                         @RequestHeader(value = "lastFeedKey", required = false) String lastFeedKey,
                                                         @RequestParam(value = "size", defaultValue = "10") int size) {
-        Map<String, Object> feedPage = feedsService.getMyFeeds(userId, lastFeedKey, size);
-        return BaseResponse.onSuccess(GetFeedsResponseDTO.from((List<Feed>) feedPage.get("feeds"), (String) feedPage.get("lastFeedKey")));
+        Map<String, Object> feedPage = feedsService.getUserFeeds(userId, lastFeedKey, size);
+        return BaseResponse.onSuccess(GetFeedsResponseDTO.from((List<GetFeedResponseDTO>) feedPage.get("feedDTOs"), (String) feedPage.get("lastFeedKey")));
     }
 
     @DeleteMapping("/feeds")

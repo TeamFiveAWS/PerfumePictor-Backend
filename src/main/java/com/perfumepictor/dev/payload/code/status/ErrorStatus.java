@@ -29,6 +29,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
     PROFILE_NOT_FOUND(NOT_FOUND, "PROFILE4041", "프로필이 없습니다."),
 
+    // Feed
+    FEED_NOT_FOUND(NOT_FOUND, "FEED4041", "피드가 없습니다."),
+
 
     // Soft Delete
     ALREADY_DELETED(BAD_REQUEST, "DELETE4001", "이미 삭제되었습니다."),

@@ -1,8 +1,11 @@
 package com.perfumepictor.dev.service;
 
 import com.perfumepictor.dev.dto.CreateFeedRequestDTO;
+import com.perfumepictor.dev.dto.GetFeedResponseDTO;
 import com.perfumepictor.dev.entity.Feed;
 import com.perfumepictor.dev.entity.Like;
+import com.perfumepictor.dev.payload.code.status.ErrorStatus;
+import com.perfumepictor.dev.payload.exception.GeneralException;
 import com.perfumepictor.dev.repository.FeedRepository;
 import com.perfumepictor.dev.repository.LikeRepository;
 import com.perfumepictor.dev.util.RedisSortedSetUtil;
@@ -11,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -51,19 +55,47 @@ public class FeedServiceImpl implements FeedService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Feed> getFeeds(int page, int size) {
+    public List<GetFeedResponseDTO> getFeeds(int page, int size) {
+        String userId = authService.getCurrentUserId();
         Set<String> keys = redisSortedSetUtil.getElementsReverse("feeds", page * size, (page + 1) * size - 1);
         List<Feed> feeds = feedRepository.getFeeds(keys);
-        feeds.sort(Comparator.comparing(Feed::getCreatedAt).reversed());
+        List<Like> likes = likeRepository.getLikes(userId, keys);
+
+        Map<String, Boolean> likeMap = likes.stream()
+                .collect(Collectors.toMap(Like::getFeedKey, Like::isLike));
+
+        List<GetFeedResponseDTO> feedResponseDTOs = new java.util.ArrayList<>(feeds.stream()
+                .map(feed -> GetFeedResponseDTO.from(feed,
+                        likeMap.getOrDefault(feed.getPK() + "$" + feed.getSK(), false)))
+                .toList());
+
+        feedResponseDTOs.sort(Comparator.comparing(GetFeedResponseDTO::createdAt).reversed());
 
         // TODO: 캐시 미스 났을 때 -> 걍 인기순으로 할까?
-        return feeds;
+        return feedResponseDTOs;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getMyFeeds(String userId, String lastFeedKey, int size) {
-        return feedRepository.getFeedsByUserId(userId, lastFeedKey, size);
+    public Map<String, Object> getUserFeeds(String userId, String lastFeedKey, int size) {
+        Map<String, Object> feedPage = feedRepository.getFeedsByUserId(userId, lastFeedKey, size);
+        List<Feed> feeds = (List<Feed>) feedPage.get("feeds");
+        Set<String> feedKeys = feeds.stream()
+                .map(Feed::getKey)
+                .collect(Collectors.toSet());
+
+        List<Like> likes = likeRepository.getLikes(userId, feedKeys);
+        Map<String, Boolean> likeMap = likes.stream()
+                .collect(Collectors.toMap(Like::getFeedKey, Like::isLike));
+
+        List<GetFeedResponseDTO> feedResponseDTOs = feeds.stream()
+                .map(feed -> GetFeedResponseDTO.from(feed, likeMap.getOrDefault(feed.getPK() + "$" + feed.getSK(), false)))
+                .toList();
+
+        return Map.of(
+                "feedDTOs", feedResponseDTOs,
+                "lastFeedKey", feedPage.get("lastFeedKey")
+        );
     }
 
     @Override
@@ -78,15 +110,18 @@ public class FeedServiceImpl implements FeedService {
     public Like likeFeed(String feedKey) {
         String userId = authService.getCurrentUserId();
 
-        Like like = likeRepository.getLike(Key.builder().partitionValue(userId).sortValue(feedKey).build())
-                .orElse(Like.builder()
+        Like like = likeRepository.getLike(userId, feedKey).orElse(Like.builder()
                         .userId(userId)
                         .feedKey(feedKey)
                         .like(false)
                         .build());
+        Feed feed = feedRepository.getFeed(feedKey)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.FEED_NOT_FOUND));
 
         like.toggleLike();
+        feed.updateLikeCount(like.isLike());
         likeRepository.updateLike(like);
+        feedRepository.updateFeed(feed);
         return like;
     }
 }

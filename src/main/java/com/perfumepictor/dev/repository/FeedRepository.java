@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +46,13 @@ public class FeedRepository {
 
     public void createFeed(Feed feed){
         feedsDynamoDbTable.putItem(feed);
+    }
+
+    public Optional<Feed> getFeed(String feedKey) {
+        return Optional.ofNullable(feedsDynamoDbTable.getItem(Key.builder()
+                .partitionValue(Feed.getPKFromKey(feedKey))
+                .sortValue(Feed.getSKFromKey(feedKey))
+                .build()));
     }
 
     public List<Feed> getFeeds(Set<String> keys) {
@@ -116,6 +124,10 @@ public class FeedRepository {
         result.put("lastFeedKey", lastFeedKey);
 
         return result;
+    }
+
+    public void updateFeed(Feed feed) {
+        feedsDynamoDbTable.updateItem(feed);
     }
 
     public void deleteFeed(String feedKey) {

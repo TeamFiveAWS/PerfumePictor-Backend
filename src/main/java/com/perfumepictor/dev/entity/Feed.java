@@ -41,6 +41,9 @@ public class Feed {
     private String perfumeInfo;
 
     @NotNull
+    private Integer likeCount;
+
+    @NotNull
     private LocalDateTime createdAt;
 
     @NotNull
@@ -83,6 +86,11 @@ public class Feed {
         return perfumeInfo;
     }
 
+    @DynamoDbAttribute("likeCount")
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
     @DynamoDbAttribute("createdAt")
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -109,6 +117,14 @@ public class Feed {
         return new CustomFeedBuilder();
     }
 
+    public void updateLikeCount(boolean isLike) {
+        if (isLike) {
+            this.likeCount++;
+        } else {
+            this.likeCount--;
+        }
+    }
+
     private static class CustomFeedBuilder extends FeedBuilder {
 
         @Override
@@ -124,6 +140,9 @@ public class Feed {
             }
             if (super.SK == null) {
                 super.SK = super.createdAt.toString() + "#" + generateRandomNumber(4);
+            }
+            if (super.likeCount == null) {
+                super.likeCount = 0;
             }
             return super.build();
         }
