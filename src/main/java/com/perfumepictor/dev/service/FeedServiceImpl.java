@@ -48,7 +48,7 @@ public class FeedServiceImpl implements FeedService {
         // TODO: 예외처리
         feedRepository.createFeed(feed);
 
-        redisSortedSetUtil.addElement("feeds", feed.getPK() + "$" +  feed.getSK(), feed.getCreatedAt().toEpochSecond(ZoneOffset.ofHours(ZONE_OFFSET_HOUR)));
+        redisSortedSetUtil.addElement("feeds", feed.getKey(), feed.getCreatedAt().toEpochSecond(ZoneOffset.ofHours(ZONE_OFFSET_HOUR)));
         System.out.println(redisSortedSetUtil.getElements("feeds"));
         return feed;
     }
@@ -66,7 +66,7 @@ public class FeedServiceImpl implements FeedService {
 
         List<GetFeedResponseDTO> feedResponseDTOs = new java.util.ArrayList<>(feeds.stream()
                 .map(feed -> GetFeedResponseDTO.from(feed,
-                        likeMap.getOrDefault(feed.getPK() + "$" + feed.getSK(), false)))
+                        likeMap.getOrDefault(feed.getKey(), false)))
                 .toList());
 
         feedResponseDTOs.sort(Comparator.comparing(GetFeedResponseDTO::createdAt).reversed());
@@ -89,7 +89,7 @@ public class FeedServiceImpl implements FeedService {
                 .collect(Collectors.toMap(Like::getFeedKey, Like::isLike));
 
         List<GetFeedResponseDTO> feedResponseDTOs = feeds.stream()
-                .map(feed -> GetFeedResponseDTO.from(feed, likeMap.getOrDefault(feed.getPK() + "$" + feed.getSK(), false)))
+                .map(feed -> GetFeedResponseDTO.from(feed, likeMap.getOrDefault(feed.getKey(), false)))
                 .toList();
 
         return Map.of(
